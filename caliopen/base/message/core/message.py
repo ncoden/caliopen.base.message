@@ -43,7 +43,14 @@ class PrivacyIndexCompute(object):
 
     def get_features(self):
         """Return formatted features for storage."""
-        return dict((k, v) for k, v in self.features.items() if v)
+        res = {}
+        for k, v in self.features.items():
+            if not v:
+                pass
+            if isinstance(v, (list, tuple)):
+                res[k] = ','.join(v)
+            res[k] = '{}'.format(v)
+        return res
 
 
 class Message(BaseUserCore, MixinCoreIndex):

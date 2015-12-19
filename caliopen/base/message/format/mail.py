@@ -152,10 +152,13 @@ class MailMessage(object):
     @property
     def privacy_features(self):
         """Compute privacy features map."""
-        features = {'transport_security': None}
+        features = {'transport_security': None,
+                    'content_security': []}
 
-        if 'PGP' in [x.content_type for x in self.parts]:
-            features['content_security'] = 'PGP'
+        if 'pgp-encrypted' in [x.content_type for x in self.parts]:
+            features['content_security'].append('PGP')
+        if 'pgp-signature' in [x.content_type for x in self.parts]:
+            features['content_security'].append('PGPSIGNED')
         # XXX explore headers to compute more features
         return features
 
