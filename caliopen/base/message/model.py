@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Caliopen storage model for messages."""
 
-from cqlengine import columns
+from cassandra.cqlengine import columns
+
 from caliopen.base.store.model import BaseModel, BaseIndexDocument
 from caliopen.base.store.mixin import IndexTagMixin
 
@@ -79,6 +80,7 @@ class Message(BaseModel):
     date = columns.DateTime()
     date_insert = columns.DateTime()
     privacy_index = columns.Integer()
+    privacy_features = columns.Map(columns.Text(), columns.Text())
     importance_level = columns.Integer()
     subject = columns.Text()  # Subject of email, the message for short
     external_message_id = columns.Text()
