@@ -62,6 +62,7 @@ class NewMessage(Model):
     subject = StringType()
     text = StringType(required=True)
     privacy_index = IntType(default=0)
+    privacy_features = DictType(StringType, default=lambda: {})
     importance_level = IntType(default=0)
     date = DateTimeType(required=True)
     tags = ListType(StringType)
