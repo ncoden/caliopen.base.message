@@ -23,18 +23,27 @@ class PrivacyIndexCompute(object):
 
     """Class for compute of privacy_index."""
 
+    _message_type_pi = {
+        'mail': 10,
+    }
+
     def __init__(self, message):
         self.message = message
         self.features = message.privacy_features
 
     def get_index(self):
+        """Compute privacy index for a message."""
         # XXX do better
-        pi = 0
+        pi = self._message_type_pi.get(self.message.type, 0)
         if 'PGP' in self.features.get('content_privacy', ''):
-            pi += 50
+            pi += 20
         if self.features.get('transport_security'):
             pi += 10
         return pi
+
+    def get_features(self):
+        """Return formatted features for storage."""
+        return dict((k, v) for k, v in self.features.items() if v)
 
 
 class Message(BaseUserCore, MixinCoreIndex):
@@ -71,7 +80,7 @@ class Message(BaseUserCore, MixinCoreIndex):
                                          date=message.date,
                                          date_insert=datetime.utcnow(),
                                          privacy_index=picomp.get_index(),
-                                         privacy_features=message.privacy_features,
+                                         privacy_features=picomp.get_features(),
                                          importance_level=
                                             message.importance_level,
                                          subject=message.subject,
