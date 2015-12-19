@@ -142,23 +142,8 @@ class MailMessage(object):
         return MailPart(part)
 
     @property
-    def transport_privacy_index(self):
-        """Evaluate transport privacy index."""
-        # XXX : TODO
-        return random.randint(0, 50)
-
-    @property
-    def content_privacy_index(self):
-        """Evaluate content privacy index."""
-        # XXX: real evaluation needed ;)
-        if 'PGP' in [x.content_type for x in self.parts]:
-            return random.randint(50, 100)
-        else:
-            return 0.0
-
-    @property
     def privacy_features(self):
-        """Compute privacy features map to compute privacy_index."""
+        """Compute privacy features map."""
         features = {'transport_security': None}
 
         if 'PGP' in [x.content_type for x in self.parts]:
@@ -240,9 +225,5 @@ class MailMessage(object):
         msg.external_message_id = self.external_message_id
 
         msg.privacy_features = self.privacy_features
-        # XXX do better
-        msg.privacy_index = (self.transport_privacy_index +
-                             self.content_privacy_index) / 2
-
         msg.importance_level = self.importance_level
         return msg

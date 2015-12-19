@@ -61,7 +61,6 @@ class NewMessage(Model):
     from_ = StringType(required=True)
     subject = StringType()
     text = StringType(required=True)
-    privacy_index = IntType(default=0)
     privacy_features = DictType(StringType, default=lambda: {})
     importance_level = IntType(default=0)
     date = DateTimeType(required=True)
@@ -85,6 +84,7 @@ class Message(NewMessage):
     message_id = UUIDType(required=True)
     date_insert = DateTimeType(required=True)
     text = StringType()
+    privacy_index = IntType(default=0)
 
     class Options:
         roles = {'default': blacklist('user_id')}
