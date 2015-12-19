@@ -157,6 +157,16 @@ class MailMessage(object):
             return 0.0
 
     @property
+    def privacy_features(self):
+        """Compute privacy features map to compute privacy_index."""
+        features = {'transport_security': None}
+
+        if 'PGP' in [x.content_type for x in self.parts]:
+            features['content_security'] = 'PGP'
+        # XXX explore headers to compute more features
+        return features
+
+    @property
     def spam_level(self):
         """Report spam level."""
         try:
@@ -228,8 +238,11 @@ class MailMessage(object):
         msg.text = self.text
         msg.external_parent_id = self.external_parent_id
         msg.external_message_id = self.external_message_id
-        # XXX well ....
+
+        msg.privacy_features = self.privacy_features
+        # XXX do better
         msg.privacy_index = (self.transport_privacy_index +
                              self.content_privacy_index) / 2
+
         msg.importance_level = self.importance_level
         return msg
