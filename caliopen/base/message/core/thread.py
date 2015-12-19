@@ -94,7 +94,7 @@ class Thread(BaseUserCore, MixinCoreIndex):
         kwargs = {'user_id': user.user_id,
                   'thread_id': new_id,
                   'date_insert': datetime.utcnow(),
-                  'privacy_index': message.privacy_index,
+                  'privacy_index': 0,   # XXX to compute somehow
                   'text': message.text[:200],
                   '_indexed_extra': {'date_update': datetime.utcnow(),
                                      'contacts': contacts, }
@@ -114,10 +114,6 @@ class Thread(BaseUserCore, MixinCoreIndex):
 
     def update_from_message(self, message):
         # XXX concurrency will have to be considered correctly
-        if message.privacy_index < self.privacy_index:
-            # XXX : use min value, is it correct ?
-            self.privacy_index = message.privacy_index
-            self.save()
         index = self._index_class.get(self.user_id,
                                       self.thread_id)
         if not index:
@@ -126,7 +122,6 @@ class Thread(BaseUserCore, MixinCoreIndex):
         index_data = {
             'text': message.text[:200],
             'date_update': datetime.utcnow(),
-            'privacy_index': self.privacy_index,
         }
         if message.recipients:
             contacts = [x.to_primitive() for x in message.recipients]

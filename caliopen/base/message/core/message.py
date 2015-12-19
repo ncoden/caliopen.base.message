@@ -19,17 +19,18 @@ from caliopen.base.message.parameters import Message as ParamMessage
 log = logging.getLogger(__name__)
 
 
-class PricacyIndexCompute(object):
+class PrivacyIndexCompute(object):
 
-    """Class for compute of privacy_index based on privacy_features dict."""
+    """Class for compute of privacy_index."""
 
-    def __init__(self, features):
-        self.features = features
+    def __init__(self, message):
+        self.message = message
+        self.features = message.privacy_features
 
     def get_index(self):
         # XXX do better
         pi = 0
-        if 'PGP' in self.features.get('content_privacy'):
+        if 'PGP' in self.features.get('content_privacy', ''):
             pi += 50
         if self.features.get('transport_security'):
             pi += 10
@@ -48,7 +49,7 @@ class Message(BaseUserCore, MixinCoreIndex):
     def create(cls, user, message, thread, lookup):
         """Create a new message for a given user and thread."""
         message.validate()
-        picomp = PricacyIndexCompute(message.privacy_features)
+        picomp = PrivacyIndexCompute(message)
         parent_id = message.external_parent_id
         message_id = uuid.uuid4()
         answer_to = lookup.message_id if lookup else None
