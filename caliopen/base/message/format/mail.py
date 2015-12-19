@@ -11,7 +11,7 @@ must be defined outside of this one.
 
 import logging
 import base64
-import random
+
 from itertools import groupby
 from mailbox import Message
 from datetime import datetime
@@ -166,12 +166,6 @@ class MailMessage(object):
         return 100.0
 
     @property
-    def importance_level(self):
-        """Return percent estimated importance level of this message."""
-        # XXX. real compute needed
-        return 0 if self.spam_level else random.randint(50, 100)
-
-    @property
     def lists(self):
         """List related to message."""
         lists = []
@@ -225,5 +219,4 @@ class MailMessage(object):
         msg.external_message_id = self.external_message_id
 
         msg.privacy_features = self.privacy_features
-        msg.importance_level = self.importance_level
         return msg
