@@ -16,6 +16,7 @@ from itertools import groupby
 from mailbox import Message
 from datetime import datetime
 from email.utils import parseaddr, parsedate_tz, mktime_tz
+from email.header import decode_header
 
 from caliopen.base.message.parameters import NewMessage, Part
 
@@ -32,6 +33,13 @@ def clean_email_address(addr):
         name, ext = name.split('+', 2)
     # unicode everywhere
     return (u'%s@%s' % (name, domain), email)
+
+
+def parse_header(header):
+    res = decode_header(header[1])[0]
+    if res[1]:
+        return res[0].decode(res[1])
+    return res[0]
 
 
 class MailPart(object):
@@ -127,7 +135,7 @@ class MailMessage(object):
         headers = {}
         data = sorted(self.mail.items(), key=keyfunc)
         for k, g in groupby(data, key=keyfunc):
-            headers[k] = [x[1] for x in g]
+            headers[k] = [parse_header(x) for x in g]
         return headers
 
     def _extract_parts(self):
@@ -144,7 +152,7 @@ class MailMessage(object):
     @property
     def privacy_features(self):
         """Compute privacy features map."""
-        features = {'transport_security': None}
+        features = {'transport_security': ''}
 
         if 'PGP' in [x.content_type for x in self.parts]:
             features['content_security'] = 'PGP'
